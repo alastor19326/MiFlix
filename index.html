@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>MiFlix PRO</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<header>
+    <h1>🔥 MiFlix PRO</h1>
+
+    <input type="text" id="buscador" placeholder="Buscar películas o series...">
+
+    <select id="tipo">
+        <option value="multi">Todo</option>
+        <option value="movie">Películas</option>
+        <option value="tv">Series</option>
+    </select>
+</header>
+
+<main id="contenedor"></main>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span id="cerrar">&times;</span>
+        <iframe id="trailer" frameborder="0" allowfullscreen></iframe>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
