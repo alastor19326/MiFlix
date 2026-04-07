@@ -1,4 +1,4 @@
-const API_KEY = "TU_API_KEY_AQUI"; // 🔴 CAMBIA ESTO
+const API_KEY = "27bdc3a806072528f1808a4eeec66a72";
 
 const contenedor = document.getElementById("contenedor");
 const buscador = document.getElementById("buscador");
