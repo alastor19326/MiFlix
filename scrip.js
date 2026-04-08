@@ -3,7 +3,15 @@ const API_KEY = "27bdc3a806072528f1808a4eeec66a72";
 const contenedor = document.getElementById("contenedor");
 const tendencias = document.getElementById("tendencias");
 const favCont = document.getElementById("favoritos");
-const buscador = document.getElementById("buscador");
+onst btnBuscar = document.getElementById("btnBuscar");
+
+/* CLICK EN LA LUPA */
+btnBuscar.addEventListener("click", buscar);
+
+/* ENTER */
+buscador.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") buscar();
+});
 
 const modal = document.getElementById("modal");
 const trailer = document.getElementById("trailer");
