@@ -3,15 +3,9 @@ const API_KEY = "27bdc3a806072528f1808a4eeec66a72";
 const contenedor = document.getElementById("contenedor");
 const tendencias = document.getElementById("tendencias");
 const favCont = document.getElementById("favoritos");
-onst btnBuscar = document.getElementById("btnBuscar");
 
-/* CLICK EN LA LUPA */
-btnBuscar.addEventListener("click", buscar);
-
-/* ENTER */
-buscador.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") buscar();
-});
+const buscador = document.getElementById("buscador");
+const btnBuscar = document.getElementById("btnBuscar");
 
 const modal = document.getElementById("modal");
 const trailer = document.getElementById("trailer");
@@ -19,22 +13,24 @@ const cerrar = document.getElementById("cerrar");
 
 let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
 
-/* TENDENCIAS */
+/* ================== TENDENCIAS ================== */
 async function cargarTendencias() {
     const res = await fetch(`https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}`);
     const data = await res.json();
     mostrar(data.results, tendencias);
 }
 
-/* BUSCAR */
+/* ================== BUSCAR ================== */
 async function buscar() {
-    const texto = buscador.value;
+    const texto = buscador.value.trim();
+    if (texto === "") return;
+
     const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${texto}`);
     const data = await res.json();
     mostrar(data.results, contenedor);
 }
 
-/* MOSTRAR */
+/* ================== MOSTRAR ================== */
 function mostrar(lista, lugar) {
     lugar.innerHTML = "";
 
@@ -43,17 +39,30 @@ function mostrar(lista, lugar) {
 
         const titulo = item.title || item.name;
 
-        lugar.innerHTML += `
-            <div class="card">
-                <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
-                <button class="ver" onclick="verTrailer(${item.id}, '${item.media_type}')">▶</button>
-                <button class="fav" onclick="guardar('${titulo}')">⭐</button>
-            </div>
+        const card = document.createElement("div");
+        card.classList.add("card");
+
+        card.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
+            <button class="ver">▶</button>
+            <button class="fav">⭐</button>
         `;
+
+        /* BOTÓN VER */
+        card.querySelector(".ver").onclick = () => {
+            verTrailer(item.id, item.media_type || "movie");
+        };
+
+        /* BOTÓN FAVORITO */
+        card.querySelector(".fav").onclick = () => {
+            guardar(item);
+        };
+
+        lugar.appendChild(card);
     });
 }
 
-/* TRAILER */
+/* ================== TRAILER ================== */
 async function verTrailer(id, tipo) {
     const res = await fetch(`https://api.themoviedb.org/3/${tipo}/${id}/videos?api_key=${API_KEY}`);
     const data = await res.json();
@@ -66,18 +75,35 @@ async function verTrailer(id, tipo) {
     }
 }
 
-/* FAVORITOS */
-function guardar(titulo) {
-    favoritos.push(titulo);
+/* ================== FAVORITOS ================== */
+function guardar(item) {
+    favoritos.push(item);
     localStorage.setItem("favoritos", JSON.stringify(favoritos));
-    alert("Agregado ⭐");
+    mostrarFavoritos();
 }
 
-/* EVENTOS */
+/* MOSTRAR FAVORITOS */
+function mostrarFavoritos() {
+    mostrar(favoritos, favCont);
+}
+
+/* ================== EVENTOS ================== */
+btnBuscar.addEventListener("click", buscar);
+
+buscador.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") buscar();
+});
+
 buscador.addEventListener("keyup", buscar);
+
 cerrar.onclick = () => {
     modal.style.display = "none";
     trailer.src = "";
+};
+
+/* ================== INICIO ================== */
+cargarTendencias();
+mostrarFavoritos();
 };
 
 /* INICIO */
