@@ -10,26 +10,36 @@ header {
     padding: 20px;
 }
 
-/* BUSCADOR PRO */
+/* BUSCADOR PRO (ARREGLADO) */
+.busqueda {
+    position: relative;
+    display: inline-block;
+}
+
 .busqueda input {
-    width: 150px;
+    width: 180px;
     padding: 10px 35px 10px 10px;
     border-radius: 20px;
     border: none;
-    background: #222;
-    color: white;
+    outline: none;
+    background: #fff;
+    color: black;
     transition: 0.3s;
 }
 
 .busqueda input:focus {
-    width: 250px;
+    width: 260px;
 }
 
+/* ICONO BIEN POSICIONADO */
 .icono {
     position: absolute;
-    margin-left: -30px;
-    margin-top: 12px;
-    width: 18px;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    stroke: black;
 }
 
 /* FILAS NETFLIX */
@@ -80,6 +90,10 @@ button {
     margin: 5% auto;
 }
 
+iframe {
+    width: 100%;
+    height: 400px;
+}
 iframe {
     width: 100%;
     height: 400px;
