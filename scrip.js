@@ -37,8 +37,6 @@ function mostrar(lista, lugar) {
     lista.forEach(item => {
         if (!item.poster_path) return;
 
-        const titulo = item.title || item.name;
-
         const card = document.createElement("div");
         card.classList.add("card");
 
@@ -48,12 +46,10 @@ function mostrar(lista, lugar) {
             <button class="fav">⭐</button>
         `;
 
-        /* BOTÓN VER */
         card.querySelector(".ver").onclick = () => {
             verTrailer(item.id, item.media_type || "movie");
         };
 
-        /* BOTÓN FAVORITO */
         card.querySelector(".fav").onclick = () => {
             guardar(item);
         };
@@ -82,7 +78,6 @@ function guardar(item) {
     mostrarFavoritos();
 }
 
-/* MOSTRAR FAVORITOS */
 function mostrarFavoritos() {
     mostrar(favoritos, favCont);
 }
@@ -90,10 +85,15 @@ function mostrarFavoritos() {
 /* ================== EVENTOS ================== */
 btnBuscar.addEventListener("click", buscar);
 
-buscador.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") buscar();
+/* ✅ ENTER CORREGIDO */
+buscador.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        buscar();
+    }
 });
 
+/* OPCIONAL: buscar mientras escribís */
 buscador.addEventListener("keyup", buscar);
 
 cerrar.onclick = () => {
@@ -104,7 +104,3 @@ cerrar.onclick = () => {
 /* ================== INICIO ================== */
 cargarTendencias();
 mostrarFavoritos();
-};
-
-/* INICIO */
-cargarTendencias();
