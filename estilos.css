@@ -104,3 +104,11 @@ iframe {
     background: transparent;
     cursor: pointer;
 }
+
+.card button {
+    margin-top: 5px;
+}
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
