@@ -1,31 +1,47 @@
 body {
-    margin: 0;
-    font-family: Arial;
     background: #0f0f0f;
     color: white;
+    font-family: Arial;
+    margin: 0;
 }
 
 header {
     text-align: center;
-    padding: 15px;
-    background: #141414;
+    padding: 20px;
 }
 
-input, select {
-    padding: 10px;
-    margin: 10px;
-    border-radius: 5px;
+/* BUSCADOR PRO */
+.busqueda input {
+    width: 150px;
+    padding: 10px 35px 10px 10px;
+    border-radius: 20px;
     border: none;
+    background: #222;
+    color: white;
+    transition: 0.3s;
 }
 
-#contenedor {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 15px;
+.busqueda input:focus {
+    width: 250px;
+}
+
+.icono {
+    position: absolute;
+    margin-left: -30px;
+    margin-top: 12px;
+    width: 18px;
+}
+
+/* FILAS NETFLIX */
+.fila {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
     padding: 20px;
 }
 
 .card {
+    min-width: 150px;
     background: #1c1c1c;
     border-radius: 10px;
     overflow: hidden;
@@ -33,43 +49,30 @@ input, select {
 }
 
 .card:hover {
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
 .card img {
     width: 100%;
 }
 
-.card h3 {
-    padding: 10px;
-    font-size: 16px;
-}
-
 button {
-    margin: 5px;
-    padding: 8px;
+    width: 100%;
+    padding: 5px;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
 }
 
-.ver {
-    background: red;
-    color: white;
-}
-
-.fav {
-    background: gold;
-}
+.ver { background: red; color: white; }
+.fav { background: gold; }
 
 /* MODAL */
 .modal {
     display: none;
     position: fixed;
+    background: rgba(0,0,0,0.9);
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.9);
-    top: 0;
 }
 
 .modal-content {
@@ -80,27 +83,4 @@ button {
 iframe {
     width: 100%;
     height: 400px;
-}
-
-#cerrar {
-    font-size: 30px;
-    cursor: pointer;
-}
-
-.busqueda {
-    position: relative;
-    display: inline-block;
-}
-
-.icono {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.busqueda input {
-    padding: 10px 10px 10px 35px;
-    border-radius: 5px;
-    border: none;
 }
