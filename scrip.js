@@ -23,11 +23,26 @@ async function cargarTendencias() {
 /* ================== BUSCAR ================== */
 async function buscar() {
     const texto = buscador.value.trim();
-    if (texto === "") return;
 
-    const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${texto}`);
-    const data = await res.json();
-    mostrar(data.results, contenedor);
+    if (texto === "") {
+        contenedor.innerHTML = "";
+        return;
+    }
+
+    try {
+        const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${texto}`);
+        const data = await res.json();
+
+        if (data.results && data.results.length > 0) {
+            mostrar(data.results, contenedor);
+        } else {
+            contenedor.innerHTML = "<p>No se encontraron resultados</p>";
+        }
+
+    } catch (error) {
+        console.error("Error en búsqueda:", error);
+        contenedor.innerHTML = "<p>Error al buscar</p>";
+    }
 }
 
 /* ================== MOSTRAR ================== */
@@ -36,6 +51,8 @@ function mostrar(lista, lugar) {
 
     lista.forEach(item => {
         if (!item.poster_path) return;
+
+        const tipo = item.media_type || "movie";
 
         const card = document.createElement("div");
         card.classList.add("card");
@@ -47,7 +64,7 @@ function mostrar(lista, lugar) {
         `;
 
         card.querySelector(".ver").onclick = () => {
-            verTrailer(item.id, item.media_type || "movie");
+            verTrailer(item.id, tipo);
         };
 
         card.querySelector(".fav").onclick = () => {
@@ -56,18 +73,29 @@ function mostrar(lista, lugar) {
 
         lugar.appendChild(card);
     });
+
+    if (lugar.innerHTML === "") {
+        lugar.innerHTML = "<p>No hay imágenes disponibles</p>";
+    }
 }
 
 /* ================== TRAILER ================== */
 async function verTrailer(id, tipo) {
-    const res = await fetch(`https://api.themoviedb.org/3/${tipo}/${id}/videos?api_key=${API_KEY}`);
-    const data = await res.json();
+    try {
+        const res = await fetch(`https://api.themoviedb.org/3/${tipo}/${id}/videos?api_key=${API_KEY}`);
+        const data = await res.json();
 
-    const video = data.results.find(v => v.type === "Trailer");
+        const video = data.results.find(v => v.type === "Trailer");
 
-    if (video) {
-        trailer.src = `https://www.youtube.com/embed/${video.key}`;
-        modal.style.display = "block";
+        if (video) {
+            trailer.src = `https://www.youtube.com/embed/${video.key}`;
+            modal.style.display = "block";
+        } else {
+            alert("No hay trailer disponible");
+        }
+
+    } catch (error) {
+        console.error("Error trailer:", error);
     }
 }
 
@@ -85,7 +113,7 @@ function mostrarFavoritos() {
 /* ================== EVENTOS ================== */
 btnBuscar.addEventListener("click", buscar);
 
-/* ✅ ENTER CORREGIDO */
+/* ENTER */
 buscador.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
         e.preventDefault();
