@@ -14,39 +14,31 @@ const cerrar = document.getElementById("cerrar");
 
 let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
 
-/* ================== TENDENCIAS ================== */
+/* TENDENCIAS */
 async function cargarTendencias() {
     const res = await fetch(`https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}`);
     const data = await res.json();
     mostrar(data.results, tendencias);
 }
 
-/* ================== BUSCAR ================== */
-async function buscar() {
-    const texto = buscador.value.trim();
-
-    if (texto === "") {
-        contenedor.innerHTML = "";
-        return;
-    }
-
-    try {
-        const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${texto}`);
-        const data = await res.json();
-
-        if (data.results && data.results.length > 0) {
-            mostrar(data.results, contenedor);
-        } else {
-            contenedor.innerHTML = "<p>No se encontraron resultados</p>";
-        }
-
-    } catch (error) {
-        console.error(error);
-        contenedor.innerHTML = "<p>Error al buscar</p>";
-    }
+/* CATEGORÍAS */
+async function cargarCategoria(id) {
+    const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${id}`);
+    const data = await res.json();
+    mostrar(data.results, contenedor);
 }
 
-/* ================== MOSTRAR ================== */
+/* BUSCAR */
+async function buscar() {
+    const texto = buscador.value.trim();
+    if (!texto) return;
+
+    const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${texto}`);
+    const data = await res.json();
+    mostrar(data.results, contenedor);
+}
+
+/* MOSTRAR */
 function mostrar(lista, lugar) {
     lugar.innerHTML = "";
 
@@ -55,73 +47,57 @@ function mostrar(lista, lugar) {
 
         const tipo = item.media_type || "movie";
         const titulo = item.title || item.name;
-        const esFavorito = favoritos.some(f => f.id === item.id);
+        const esFav = favoritos.some(f => f.id === item.id);
 
         const card = document.createElement("div");
         card.classList.add("card");
 
         card.innerHTML = `
             <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
-            <p class="titulo">${titulo}</p>
-            <button class="ver">▶</button>
-            <button class="fav">${esFavorito ? "❌" : "⭐"}</button>
+            <div class="info">
+                <p class="titulo">${titulo}</p>
+                <button class="ver">▶</button>
+                <button class="fav">${esFav ? "❌" : "⭐"}</button>
+            </div>
         `;
 
-        card.querySelector(".ver").onclick = () => {
-            verTrailer(item.id, tipo);
-        };
-
-        card.querySelector(".fav").onclick = () => {
-            guardar(item);
-        };
+        card.querySelector(".ver").onclick = () => verTrailer(item.id, tipo);
+        card.querySelector(".fav").onclick = () => guardar(item);
 
         lugar.appendChild(card);
     });
-
-    if (lugar.innerHTML === "") {
-        lugar.innerHTML = "<p>No hay imágenes disponibles</p>";
-    }
 }
 
-/* ================== TRAILER ================== */
+/* TRAILER */
 async function verTrailer(id, tipo) {
-    try {
-        const res = await fetch(`https://api.themoviedb.org/3/${tipo}/${id}/videos?api_key=${API_KEY}`);
-        const data = await res.json();
+    const res = await fetch(`https://api.themoviedb.org/3/${tipo}/${id}/videos?api_key=${API_KEY}`);
+    const data = await res.json();
 
-        const video = data.results.find(v => v.site === "YouTube");
-
-        if (video) {
-            trailer.src = `https://www.youtube.com/embed/${video.key}`;
-            modal.style.display = "block";
-        } else {
-            alert("No hay trailer");
-        }
-
-    } catch (error) {
-        console.error(error);
+    const video = data.results.find(v => v.site === "YouTube");
+    if (video) {
+        trailer.src = `https://www.youtube.com/embed/${video.key}`;
+        modal.style.display = "block";
     }
 }
 
-/* ================== ANIMACIÓN ⭐ ================== */
+/* ANIMACIÓN */
 function animarFavorito() {
     const anim = document.createElement("div");
     anim.innerText = "⭐";
     anim.className = "animFav";
     document.body.appendChild(anim);
-
     setTimeout(() => anim.remove(), 1000);
 }
 
-/* ================== FAVORITOS ================== */
+/* FAVORITOS */
 function guardar(item) {
-    const index = favoritos.findIndex(f => f.id === item.id);
+    const i = favoritos.findIndex(f => f.id === item.id);
 
-    if (index !== -1) {
-        favoritos.splice(index, 1);
+    if (i !== -1) {
+        favoritos.splice(i, 1);
     } else {
         favoritos.push(item);
-        animarFavorito(); // ⭐ animación
+        animarFavorito();
     }
 
     localStorage.setItem("favoritos", JSON.stringify(favoritos));
@@ -133,21 +109,18 @@ function mostrarFavoritos() {
     mostrar(favoritos, favCont);
 }
 
-/* ================== VACIAR FAVORITOS ================== */
+/* VACIAR */
 btnVaciar.onclick = () => {
     favoritos = [];
     localStorage.setItem("favoritos", JSON.stringify(favoritos));
     mostrarFavoritos();
 };
 
-/* ================== EVENTOS ================== */
-btnBuscar.addEventListener("click", buscar);
+/* EVENTOS */
+btnBuscar.onclick = buscar;
 
-buscador.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        e.preventDefault();
-        buscar();
-    }
+buscador.addEventListener("keydown", e => {
+    if (e.key === "Enter") buscar();
 });
 
 cerrar.onclick = () => {
@@ -155,13 +128,10 @@ cerrar.onclick = () => {
     trailer.src = "";
 };
 
-window.onclick = (e) => {
-    if (e.target === modal) {
-        modal.style.display = "none";
-        trailer.src = "";
-    }
+window.onclick = e => {
+    if (e.target === modal) cerrar.onclick();
 };
 
-/* ================== INICIO ================== */
+/* INICIO */
 cargarTendencias();
 mostrarFavoritos();
