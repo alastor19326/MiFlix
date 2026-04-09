@@ -29,23 +29,18 @@ async function buscar() {
         return;
     }
 
-    console.log("Buscando:", texto); // 👈 prueba
-
     try {
         const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${texto}`);
         const data = await res.json();
 
-        console.log(data); // 👈 IMPORTANTE
-
-        if (!data.results || data.results.length === 0) {
+        if (data.results && data.results.length > 0) {
+            mostrar(data.results, contenedor);
+        } else {
             contenedor.innerHTML = "<p>No se encontraron resultados</p>";
-            return;
         }
 
-        mostrar(data.results, contenedor);
-
     } catch (error) {
-        console.error(error);
+        console.error("Error en búsqueda:", error);
         contenedor.innerHTML = "<p>Error al buscar</p>";
     }
 }
@@ -125,6 +120,9 @@ buscador.addEventListener("keydown", (e) => {
         buscar();
     }
 });
+
+/* OPCIONAL: buscar mientras escribís */
+buscador.addEventListener("keyup", buscar);
 
 cerrar.onclick = () => {
     modal.style.display = "none";
