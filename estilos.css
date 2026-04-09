@@ -112,3 +112,12 @@ iframe {
     background: transparent;
     cursor: pointer;
 }
+
+.fav {
+    background: gold;
+}
+
+.fav:contains("❌") {
+    background: red;
+    color: white;
+}
