@@ -108,10 +108,6 @@ iframe {
 .card button {
     margin-top: 5px;
 }
-    border: none;
-    background: transparent;
-    cursor: pointer;
-}
 
 .fav {
     background: gold;
@@ -120,4 +116,36 @@ iframe {
 .fav:contains("❌") {
     background: red;
     color: white;
+}
+
+/* TÍTULO */
+.titulo {
+    font-size: 12px;
+    padding: 5px;
+    text-align: center;
+}
+
+/* BOTÓN VACIAR */
+#vaciarFav {
+    margin-left: 20px;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    background: crimson;
+    color: white;
+    border-radius: 5px;
+}
+
+/* ANIMACIÓN ⭐ */
+.animFav {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 30px;
+    animation: subir 1s ease forwards;
+}
+
+@keyframes subir {
+    0% { opacity: 0; transform: translateY(50px); }
+    50% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-50px); }
 }
