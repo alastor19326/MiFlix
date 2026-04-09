@@ -54,19 +54,23 @@ function mostrar(lista, lugar) {
 
         const tipo = item.media_type || "movie";
 
+        const esFavorito = favoritos.some(f => f.id === item.id);
+
         const card = document.createElement("div");
         card.classList.add("card");
 
         card.innerHTML = `
             <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
             <button class="ver">▶</button>
-            <button class="fav">⭐</button>
+            <button class="fav">${esFavorito ? "❌" : "⭐"}</button>
         `;
 
+        /* VER TRAILER */
         card.querySelector(".ver").onclick = () => {
             verTrailer(item.id, tipo);
         };
 
+        /* AGREGAR / QUITAR FAVORITO */
         card.querySelector(".fav").onclick = () => {
             guardar(item);
         };
@@ -79,7 +83,7 @@ function mostrar(lista, lugar) {
     }
 }
 
-/* ================== TRAILER (ARREGLADO) ================== */
+/* ================== TRAILER ================== */
 async function verTrailer(id, tipo) {
     try {
         const res = await fetch(`https://api.themoviedb.org/3/${tipo}/${id}/videos?api_key=${API_KEY}`);
@@ -90,7 +94,6 @@ async function verTrailer(id, tipo) {
             return;
         }
 
-        // 🔥 AHORA AGARRA CUALQUIER VIDEO DE YOUTUBE
         const video = data.results.find(v => v.site === "YouTube");
 
         if (video) {
@@ -108,9 +111,19 @@ async function verTrailer(id, tipo) {
 
 /* ================== FAVORITOS ================== */
 function guardar(item) {
-    favoritos.push(item);
+    const index = favoritos.findIndex(f => f.id === item.id);
+
+    if (index !== -1) {
+        // ❌ eliminar
+        favoritos.splice(index, 1);
+    } else {
+        // ⭐ agregar
+        favoritos.push(item);
+    }
+
     localStorage.setItem("favoritos", JSON.stringify(favoritos));
     mostrarFavoritos();
+    buscar(); // 🔥 refresca resultados
 }
 
 function mostrarFavoritos() {
@@ -128,7 +141,7 @@ buscador.addEventListener("keydown", (e) => {
     }
 });
 
-/* ❌ SACAMOS EL KEYUP (rompe todo) */
+/* ❌ IMPORTANTE: NO usar keyup */
 // buscador.addEventListener("keyup", buscar);
 
 cerrar.onclick = () => {
@@ -136,7 +149,7 @@ cerrar.onclick = () => {
     trailer.src = "";
 };
 
-/* CERRAR CLICK AFUERA */
+/* cerrar haciendo click afuera */
 window.onclick = (e) => {
     if (e.target === modal) {
         modal.style.display = "none";
