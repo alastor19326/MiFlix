@@ -79,23 +79,30 @@ function mostrar(lista, lugar) {
     }
 }
 
-/* ================== TRAILER ================== */
+/* ================== TRAILER (ARREGLADO) ================== */
 async function verTrailer(id, tipo) {
     try {
         const res = await fetch(`https://api.themoviedb.org/3/${tipo}/${id}/videos?api_key=${API_KEY}`);
         const data = await res.json();
 
-        const video = data.results.find(v => v.type === "Trailer");
+        if (!data.results || data.results.length === 0) {
+            alert("No hay videos disponibles");
+            return;
+        }
+
+        // 🔥 AHORA AGARRA CUALQUIER VIDEO DE YOUTUBE
+        const video = data.results.find(v => v.site === "YouTube");
 
         if (video) {
             trailer.src = `https://www.youtube.com/embed/${video.key}`;
             modal.style.display = "block";
         } else {
-            alert("No hay trailer disponible");
+            alert("No hay trailer en YouTube");
         }
 
     } catch (error) {
         console.error("Error trailer:", error);
+        alert("Error al cargar trailer");
     }
 }
 
@@ -121,12 +128,20 @@ buscador.addEventListener("keydown", (e) => {
     }
 });
 
-/* OPCIONAL: buscar mientras escribís */
-buscador.addEventListener("keyup", buscar);
+/* ❌ SACAMOS EL KEYUP (rompe todo) */
+// buscador.addEventListener("keyup", buscar);
 
 cerrar.onclick = () => {
     modal.style.display = "none";
     trailer.src = "";
+};
+
+/* CERRAR CLICK AFUERA */
+window.onclick = (e) => {
+    if (e.target === modal) {
+        modal.style.display = "none";
+        trailer.src = "";
+    }
 };
 
 /* ================== INICIO ================== */
