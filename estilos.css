@@ -10,7 +10,12 @@ header {
     padding: 20px;
 }
 
-/* BUSCADOR PRO (ARREGLADO) */
+h2 {
+    margin-left: 20px;
+    color: #e50914;
+}
+
+/* BUSCADOR */
 .busqueda {
     position: relative;
     display: inline-block;
@@ -21,28 +26,34 @@ header {
     padding: 10px 35px 10px 10px;
     border-radius: 20px;
     border: none;
-    outline: none;
-    background: #fff;
+    background: white;
     color: black;
-    transition: 0.3s;
 }
 
-.busqueda input:focus {
-    width: 260px;
-}
-
-/* ICONO BIEN POSICIONADO */
 .icono {
     position: absolute;
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
     width: 16px;
-    height: 16px;
-    stroke: black;
 }
 
-/* FILAS NETFLIX */
+/* CATEGORÍAS */
+.categorias {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.categorias button {
+    margin: 5px;
+    padding: 8px 15px;
+    border-radius: 20px;
+    background: #333;
+    color: white;
+    border: none;
+}
+
+/* FILAS */
 .fila {
     display: flex;
     overflow-x: auto;
@@ -50,31 +61,66 @@ header {
     padding: 20px;
 }
 
+/* CARD */
 .card {
-    min-width: 150px;
-    background: #1c1c1c;
+    min-width: 160px;
     border-radius: 10px;
     overflow: hidden;
+    position: relative;
     transition: 0.3s;
 }
 
 .card:hover {
-    transform: scale(1.1);
+    transform: scale(1.2);
+    z-index: 10;
 }
 
 .card img {
     width: 100%;
+    transition: 0.3s;
 }
 
-button {
+.card:hover img {
+    filter: brightness(0.6);
+}
+
+/* INFO HOVER */
+.info {
+    position: absolute;
+    bottom: 0;
     width: 100%;
-    padding: 5px;
+    padding: 10px;
+    background: rgba(0,0,0,0.8);
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.card:hover .info {
+    opacity: 1;
+}
+
+.titulo {
+    font-size: 12px;
+    text-align: center;
+}
+
+/* BOTONES */
+button {
+    margin-top: 5px;
+    width: 100%;
     border: none;
     cursor: pointer;
 }
 
 .ver { background: red; color: white; }
 .fav { background: gold; }
+
+#vaciarFav {
+    margin-left: 20px;
+    padding: 5px 10px;
+    background: crimson;
+    color: white;
+}
 
 /* MODAL */
 .modal {
@@ -95,47 +141,7 @@ iframe {
     height: 400px;
 }
 
-.busqueda button {
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: none;
-    background: transparent;
-    cursor: pointer;
-}
-
-.card button {
-    margin-top: 5px;
-}
-
-.fav {
-    background: gold;
-}
-
-.fav:contains("❌") {
-    background: red;
-    color: white;
-}
-
-/* TÍTULO */
-.titulo {
-    font-size: 12px;
-    padding: 5px;
-    text-align: center;
-}
-
-/* BOTÓN VACIAR */
-#vaciarFav {
-    margin-left: 20px;
-    margin-bottom: 10px;
-    padding: 5px 10px;
-    background: crimson;
-    color: white;
-    border-radius: 5px;
-}
-
-/* ANIMACIÓN ⭐ */
+/* ANIMACIÓN */
 .animFav {
     position: fixed;
     bottom: 20px;
@@ -146,6 +152,5 @@ iframe {
 
 @keyframes subir {
     0% { opacity: 0; transform: translateY(50px); }
-    50% { opacity: 1; }
     100% { opacity: 0; transform: translateY(-50px); }
 }
