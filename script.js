@@ -6,6 +6,7 @@ const favCont = document.getElementById("favoritos");
 
 const buscador = document.getElementById("buscador");
 const btnBuscar = document.getElementById("btnBuscar");
+const btnVaciar = document.getElementById("vaciarFav");
 
 const modal = document.getElementById("modal");
 const trailer = document.getElementById("trailer");
@@ -40,7 +41,7 @@ async function buscar() {
         }
 
     } catch (error) {
-        console.error("Error en búsqueda:", error);
+        console.error(error);
         contenedor.innerHTML = "<p>Error al buscar</p>";
     }
 }
@@ -53,7 +54,7 @@ function mostrar(lista, lugar) {
         if (!item.poster_path) return;
 
         const tipo = item.media_type || "movie";
-
+        const titulo = item.title || item.name;
         const esFavorito = favoritos.some(f => f.id === item.id);
 
         const card = document.createElement("div");
@@ -61,16 +62,15 @@ function mostrar(lista, lugar) {
 
         card.innerHTML = `
             <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
+            <p class="titulo">${titulo}</p>
             <button class="ver">▶</button>
             <button class="fav">${esFavorito ? "❌" : "⭐"}</button>
         `;
 
-        /* VER TRAILER */
         card.querySelector(".ver").onclick = () => {
             verTrailer(item.id, tipo);
         };
 
-        /* AGREGAR / QUITAR FAVORITO */
         card.querySelector(".fav").onclick = () => {
             guardar(item);
         };
@@ -89,24 +89,28 @@ async function verTrailer(id, tipo) {
         const res = await fetch(`https://api.themoviedb.org/3/${tipo}/${id}/videos?api_key=${API_KEY}`);
         const data = await res.json();
 
-        if (!data.results || data.results.length === 0) {
-            alert("No hay videos disponibles");
-            return;
-        }
-
         const video = data.results.find(v => v.site === "YouTube");
 
         if (video) {
             trailer.src = `https://www.youtube.com/embed/${video.key}`;
             modal.style.display = "block";
         } else {
-            alert("No hay trailer en YouTube");
+            alert("No hay trailer");
         }
 
     } catch (error) {
-        console.error("Error trailer:", error);
-        alert("Error al cargar trailer");
+        console.error(error);
     }
+}
+
+/* ================== ANIMACIÓN ⭐ ================== */
+function animarFavorito() {
+    const anim = document.createElement("div");
+    anim.innerText = "⭐";
+    anim.className = "animFav";
+    document.body.appendChild(anim);
+
+    setTimeout(() => anim.remove(), 1000);
 }
 
 /* ================== FAVORITOS ================== */
@@ -114,26 +118,31 @@ function guardar(item) {
     const index = favoritos.findIndex(f => f.id === item.id);
 
     if (index !== -1) {
-        // ❌ eliminar
         favoritos.splice(index, 1);
     } else {
-        // ⭐ agregar
         favoritos.push(item);
+        animarFavorito(); // ⭐ animación
     }
 
     localStorage.setItem("favoritos", JSON.stringify(favoritos));
     mostrarFavoritos();
-    buscar(); // 🔥 refresca resultados
+    buscar();
 }
 
 function mostrarFavoritos() {
     mostrar(favoritos, favCont);
 }
 
+/* ================== VACIAR FAVORITOS ================== */
+btnVaciar.onclick = () => {
+    favoritos = [];
+    localStorage.setItem("favoritos", JSON.stringify(favoritos));
+    mostrarFavoritos();
+};
+
 /* ================== EVENTOS ================== */
 btnBuscar.addEventListener("click", buscar);
 
-/* ENTER */
 buscador.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
         e.preventDefault();
@@ -141,15 +150,11 @@ buscador.addEventListener("keydown", (e) => {
     }
 });
 
-/* ❌ IMPORTANTE: NO usar keyup */
-// buscador.addEventListener("keyup", buscar);
-
 cerrar.onclick = () => {
     modal.style.display = "none";
     trailer.src = "";
 };
 
-/* cerrar haciendo click afuera */
 window.onclick = (e) => {
     if (e.target === modal) {
         modal.style.display = "none";
